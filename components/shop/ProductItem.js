@@ -1,9 +1,10 @@
 import React from 'react';
-import {View, Text, StyleSheet, Image, Button} from 'react-native'
+import {View, Text, StyleSheet, Image, Button, TouchableOpacity} from 'react-native'
 import Colors from '../../constants/Colors'
 
 const ProductItem = (props) => {
     return ( 
+        <TouchableOpacity onPress={props.onViewDetail}>
         <View style={styles.product}>
             <View style={styles.imageContainer}>
                 <Image source={{uri: props.image}} style={styles.image} />
@@ -17,6 +18,7 @@ const ProductItem = (props) => {
                 <Button color={Colors.primary} title='Add To Cart' onPress={props.onAddToCart} />
             </View>
         </View>
+        </TouchableOpacity>
      );
 }
 
@@ -38,11 +40,13 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 18,
-        marginVertical: 4
+        marginVertical: 2,
+        fontFamily: 'open-sans-bold'
     },
     price: {
         fontSize: 14,
-        color: '#888'
+        color: '#888',
+        fontFamily: 'open-sans'
     },
     actions: {
         flexDirection: 'row',
