@@ -1,10 +1,14 @@
 import React from 'react';
 import {View, Text, FlatList, StyleSheet, Button} from 'react-native'
-import {useSelector} from 'react-redux'
+import {useSelector, useDispatch} from 'react-redux'
+import * as cartActions from '../../store/actions/cart'
+import * as orderActions from '../../store/actions/orders'
 import Colors from '../../constants/Colors';
+import CartItem from '../../components/shop/CartItem'
 
 const CartScreen = (props) => {
 
+    const dispatch = useDispatch();
     const cartTotal = useSelector(state => state.cart.totalCost)
     const cartItems = useSelector(state => {
        const transformedCartItems = []
@@ -19,7 +23,9 @@ const CartScreen = (props) => {
                }
            )
        }
-        return transformedCartItems
+        return transformedCartItems.sort((a, b) => 
+            a.productId > b.productId ? 1 : -1
+        )
     })
 
     return ( 
@@ -28,11 +34,27 @@ const CartScreen = (props) => {
                 <Text style={styles.summaryText}>
                     Total <Text style={styles.amount}>{cartTotal.toFixed(2)}$</Text>
                     </Text>
-                <Button title="Order Now" color={Colors.accent}/>
+                <Button 
+                title="Order Now" 
+                color={Colors.accent} 
+                disabled={cartItems.length === 0} 
+                onPress={() => {
+                    dispatch(orderActions.addOrder(cartItems, cartTotal))
+                }}/>
             </View>
-                <View>
-                    <Text>Cart Items</Text>
-                </View>
+                <FlatList 
+                data={cartItems} 
+                keyExtractor={item => item.productId} 
+                renderItem={itemData => 
+                    <CartItem 
+                    quantity={itemData.item.quantity} 
+                    title={itemData.item.productTitle} 
+                    amount={itemData.item.sum} 
+                    onRemove={() => {
+                        dispatch(cartActions.removeFromCart(itemData.item.productId))
+                    }}
+                    />}
+                />
         </View>
      );
 }
